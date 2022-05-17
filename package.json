@@ -1,10 +1,13 @@
 {
-  "name": "react-firebase-fileuploader",
+  "name": "react-firebase-file-upload",
   "version": "1.0.0",
   "description": " Firebase File Uploader",
   "author": "jamesofoaye",
   "license": "MIT",
-  "repository": "jamesofoaye/react-firebase-fileuploader",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jamesofoaye/react-firebase-fileuploader.git"
+  },
   "main": "dist/index.js",
   "module": "dist/index.modern.js",
   "source": "src/index.js",
@@ -55,5 +58,23 @@
   ],
   "dependencies": {
     "firebase": "^9.8.1"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/jamesofoaye/react-firebase-fileuploader/issues"
+  },
+  "homepage": "https://github.com/jamesofoaye/react-firebase-fileuploader#readme",
+  "directories": {
+    "example": "example"
+  },
+  "keywords": [
+    "firebase",
+    "image",
+    "uploader",
+    "firebase",
+    "file",
+    "uploader",
+    "firebase",
+    "storage",
+    "uploader"
+  ]
 }

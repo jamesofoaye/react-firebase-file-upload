@@ -13,16 +13,28 @@ npm install --save react-firebase-fileuploader
 ## Usage
 
 ```jsx
-import React, { Component } from 'react'
-
-import MyComponent from 'react-firebase-fileuploader'
+import React, { useContext } from 'react'
+import { storage } from './util/firebase'
+import { FirebaseFileUploader, DownloadURLContext } from 'react-firebase-fileuploader'
 import 'react-firebase-fileuploader/dist/index.css'
 
-class Example extends Component {
-  render() {
-    return <MyComponent />
-  }
+const App = () => {
+  const  {downloadURL}  = useContext(DownloadURLContext)
+  console.log('Download URL: ' + downloadURL)
+
+  return (
+    <>
+      <FirebaseFileUploader
+        storage={storage}
+        accept=""
+        multiple={true}
+        folder={'images'}
+      />
+    </>
+  )
 }
+
+export default App
 ```
 
 ## License

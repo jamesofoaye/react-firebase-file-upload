@@ -1,8 +1,19 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, createContext, useContext } from 'react';
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { DownloadURLContext } from "./context";
 
-const FirebaseFileUploader = ({storage, accept, multiple, folder}) => {
+export const DownloadURLContext = createContext();
+
+export const DownloadURLProvider = ({ children }) => {
+  const [downloadURL, setDownloadURL] = useState('');
+
+  return (
+    <DownloadURLContext.Provider value={{downloadURL, setDownloadURL}}>
+      {children}
+    </DownloadURLContext.Provider>
+  );
+};
+
+export const FirebaseFileUploader = ({storage, accept, multiple, folder}) => {
   const [file, setFiles] = useState([]);
   const [uploadProgress, setUploadProgress] = useState({});
   const [uploadStatus, setUploadStatus] = useState({})
@@ -101,7 +112,7 @@ const FirebaseFileUploader = ({storage, accept, multiple, folder}) => {
   };
 
   return (
-    <>
+    <div>
       <section className="text-black my-8 pb-4 mx-2 bg-white rounded-md max-w-md overflow-y-auto h-auto">
         <label 
           className="flex cursor-pointer border-2 border-cyan-500 mx-auto justify-center items-center rounded-xl w-44 h-12 text-lg text-cyan-500 font-semibold"
@@ -138,7 +149,7 @@ const FirebaseFileUploader = ({storage, accept, multiple, folder}) => {
                 </button>
 
                 <img 
-                  src={files.type === 'application/pdf' ? '/assets/pdf.png' : URL.createObjectURL(files)}
+                  src={files.type === 'application/pdf' ? './assets/pdf.png' : URL.createObjectURL(files)}
                   height="50" 
                   width="50" 
                   alt="Preview"
@@ -170,7 +181,7 @@ const FirebaseFileUploader = ({storage, accept, multiple, folder}) => {
         )}
 
         {file.length > 0 && (
-          <>
+          <React.Fragment>
             <div className="flex">
               {!loading ? (
                 <button 
@@ -204,11 +215,9 @@ const FirebaseFileUploader = ({storage, accept, multiple, folder}) => {
                 </button>
               )}
             </div>
-          </>
+          </React.Fragment>
         )}
       </section>
-    </>
+    </div>
   )
 }
-
-export default FirebaseFileUploader
