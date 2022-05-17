@@ -1,10 +1,20 @@
 import React from 'react'
+import { storage } from './util/firebase'
 
-import { ExampleComponent } from 'react-firebase-fileuploader'
-import 'react-firebase-fileuploader/dist/index.css'
+import FirebaseFileUploader from 'react-firebase-fileuploader'
 
 const App = () => {
-  return <ExampleComponent text="Create React Library Example 😄" />
+  return (
+    <div>
+      <h1>Firebase File Uploader</h1>
+      <FirebaseFileUploader
+        storage={storage}
+        accept="image/*"
+        multiple={false}
+        folder={'images'}
+      />
+    </div>
+  )
 }
 
 export default App
