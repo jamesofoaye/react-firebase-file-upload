@@ -1,7 +1,7 @@
-import { ExampleComponent } from '.'
+import { FirebaseFileUploader } from '.'
 
-describe('ExampleComponent', () => {
+describe('FirebaseFileUploader', () => {
   it('is truthy', () => {
-    expect(ExampleComponent).toBeTruthy()
+    expect(FirebaseFileUploader).toBeTruthy()
   })
 })
