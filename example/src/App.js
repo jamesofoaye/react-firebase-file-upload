@@ -1,19 +1,32 @@
 import React, { useContext } from 'react'
-import { storage } from './util/firebase'
 import { FirebaseFileUploader, DownloadURLContext } from 'react-firebase-fileuploader'
 import 'react-firebase-fileuploader/dist/index.css'
 
 const App = () => {
-  const  {downloadURL}  = useContext(DownloadURLContext)
+  //file download url array for files uploaded
+  const  { downloadURL }  = useContext(DownloadURLContext)
+
   console.log('Download URL: ' + downloadURL)
 
   return (
     <>
       <FirebaseFileUploader
-        storage={storage}
-        accept=""
+        // accepted files types
+        accept="image/*"
+        //allow multiple files
         multiple={true}
-        folder={'images'}
+        // directory to store the files
+        path={'images'}
+        // your firebase api key
+        apiKey='*************************'
+        // your firebase auth domain
+        authDomain='*************************'
+        // your firebase project id
+        projectId='*************************'
+        // your firebase storage bucket
+        storageBucket='*************************'
+        // your firebase app id
+        appId='*************************'
       />
     </>
   )

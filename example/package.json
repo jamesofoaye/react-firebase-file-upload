@@ -10,7 +10,6 @@
     "eject": "node ../node_modules/react-scripts/bin/react-scripts.js eject"
   },
   "dependencies": {
-    "firebase": "^9.8.1",
     "react": "file:../node_modules/react",
     "react-dom": "file:../node_modules/react-dom",
     "react-firebase-fileuploader": "file:..",

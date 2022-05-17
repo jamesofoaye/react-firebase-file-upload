@@ -1,5 +1,6 @@
 import React, { useState, createContext, useContext } from 'react';
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { initializeApp } from "firebase/app";
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
 export const DownloadURLContext = createContext();
 
@@ -13,7 +14,21 @@ export const DownloadURLProvider = ({ children }) => {
   );
 };
 
-export const FirebaseFileUploader = ({storage, accept, multiple, folder}) => {
+export const FirebaseFileUploader = ({ apiKey, authDomain, appId, projectId, storageBucket, accept, multiple, path }) => {
+
+  const firebaseConfig = {
+    apiKey,
+    authDomain,
+    storageBucket,
+    projectId,
+    appId,
+  };
+
+  // Initialize Firebase
+  initializeApp(firebaseConfig);
+
+  const storage = getStorage()
+
   const [file, setFiles] = useState([]);
   const [uploadProgress, setUploadProgress] = useState({});
   const [uploadStatus, setUploadStatus] = useState({})
@@ -42,7 +57,7 @@ export const FirebaseFileUploader = ({storage, accept, multiple, folder}) => {
   const onUpload = async () => {
 
     for (let i = 0; i < file.length; i++) {
-      const storageRef = ref(storage,  `${folder}/${file[i].name}`);
+      const storageRef = ref(storage,  `${path}/${file[i].name}`);
 
       if(uploadStatus[file[i].name] === undefined) {
         //enable loading
@@ -75,10 +90,12 @@ export const FirebaseFileUploader = ({storage, accept, multiple, folder}) => {
             case 'storage/unauthorized':
               // User doesn't have permission to access the object
               setErrorMessage('User doesn\'t have permission to access the object')
+              setLoading(false)
               break;
             case 'storage/canceled':
               // User canceled the upload
               setErrorMessage('User canceled the upload')
+              setLoading(false)
               break;
 
               // ...
@@ -86,6 +103,7 @@ export const FirebaseFileUploader = ({storage, accept, multiple, folder}) => {
             case 'storage/unknown':
               // Unknown error occurred, inspect error.serverResponse
               setErrorMessage('Unknown error occurred, inspect error.serverResponse')
+              setLoading(false)
               break;
           }
         }, 
