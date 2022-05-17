@@ -1,13 +1,13 @@
-# react-firebase-fileupload
+# react-firebase-file-upload
 
 >  Firebase File Upload
 
-[![NPM](https://img.shields.io/npm/v/react-firebase-fileupload.svg)](https://www.npmjs.com/package/react-firebase-fileupload) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
+[![NPM](https://img.shields.io/npm/v/react-firebase-file-upload.svg)](https://www.npmjs.com/package/react-firebase-file-upload) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
 ## Install
 
 ```bash
-npm install --save react-firebase-fileupload
+npm install --save react-firebase-file-upload
 ```
 
 ## Usage
@@ -15,8 +15,8 @@ npm install --save react-firebase-fileupload
 ```jsx
 import React, { useContext } from 'react'
 import { storage } from './util/firebase'
-import { FirebaseFileUploader, DownloadURLContext } from 'react-firebase-fileupload'
-import 'react-firebase-fileupload/dist/index.css'
+import { FirebaseFileUploader, DownloadURLContext } from 'react-firebase-file-upload'
+import 'react-firebase-file-upload/dist/index.css'
 
 const App = () => {
   const  {downloadURL}  = useContext(DownloadURLContext)
