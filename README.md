@@ -14,8 +14,8 @@ npm install --save react-firebase-file-upload
 
 ```jsx
 import React, { useContext } from 'react'
-import { FirebaseFileUploader, DownloadURLContext } from 'react-firebase-fileuploader'
-import 'react-firebase-fileuploader/dist/index.css'
+import { FirebaseFileUploader, DownloadURLContext } from 'react-firebase-file-upload'
+import 'react-firebase-file-upload/dist/index.css'
 
 const App = () => {
   //file download url array for files uploaded
