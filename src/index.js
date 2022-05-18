@@ -185,15 +185,6 @@ export const FirebaseFileUploader = ({ storage, accept, multiple, path }) => {
                   />
                 )}
 
-                {/* {files.type === 'image/*' && (
-                  <img 
-                    src={new URL.createObjectURL(files)}
-                    height="50" 
-                    width="50" 
-                    alt="Preview"
-                  />
-                )} */}
-
                 <p className='truncate my-auto px-4'>{files.name}</p>
               </div>
 
