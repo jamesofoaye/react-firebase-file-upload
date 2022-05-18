@@ -27,10 +27,9 @@ export const FirebaseFileUploader = ({ storage, accept, multiple, path }) => {
   useEffect(() => {
     if (!storage) {
       setErrorMessage('No firebase storage instance provided');
-    }
-    if(!path) {
+    } else if(!path) {
       setErrorMessage('No path provided');
-    }
+    } else setErrorMessage(null);
   }, [storage, path]);
 
   /** onChange event to set selected files */
