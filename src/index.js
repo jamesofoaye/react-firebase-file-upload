@@ -1,11 +1,12 @@
-import React, { useState, createContext, useContext } from 'react';
-import { initializeApp } from "firebase/app";
-import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import React, { useState, createContext, useContext, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import pdf from './pdf.png';
 
 export const DownloadURLContext = createContext();
 
 export const DownloadURLProvider = ({ children }) => {
-  const [downloadURL, setDownloadURL] = useState('');
+  const [downloadURL, setDownloadURL] = useState([]);
 
   return (
     <DownloadURLContext.Provider value={{downloadURL, setDownloadURL}}>
@@ -14,28 +15,23 @@ export const DownloadURLProvider = ({ children }) => {
   );
 };
 
-export const FirebaseFileUploader = ({ apiKey, authDomain, appId, projectId, storageBucket, accept, multiple, path }) => {
-
-  const firebaseConfig = {
-    apiKey,
-    authDomain,
-    storageBucket,
-    projectId,
-    appId,
-  };
-
-  // Initialize Firebase
-  initializeApp(firebaseConfig);
-
-  const storage = getStorage()
-
+export const FirebaseFileUploader = ({ storage, accept, multiple, path }) => {
   const [file, setFiles] = useState([]);
   const [uploadProgress, setUploadProgress] = useState({});
   const [uploadStatus, setUploadStatus] = useState({})
-  const [errorMessage, setErrorMessage] = useState('')
+  const [errorMessage, setErrorMessage] = useState(!storage ? 'No firebase storage instance provided' : null);
   const [loading, setLoading] = useState(false)
 
   const { setDownloadURL } = useContext(DownloadURLContext);
+
+  useEffect(() => {
+    if (!storage) {
+      setErrorMessage('No firebase storage instance provided');
+    }
+    if(!path) {
+      setErrorMessage('No path provided');
+    }
+  }, [storage, path]);
 
   /** onChange event to set selected files */
   const onSelectFile = (event) => {
@@ -146,6 +142,7 @@ export const FirebaseFileUploader = ({ apiKey, authDomain, appId, projectId, sto
             multiple={multiple}
             accept={accept}
             className='hidden'
+            disabled={!storage || !path}
           />
         </label>
 
@@ -167,7 +164,7 @@ export const FirebaseFileUploader = ({ apiKey, authDomain, appId, projectId, sto
                 </button>
 
                 <img 
-                  src={files.type === 'application/pdf' ? './assets/pdf.png' : URL.createObjectURL(files)}
+                  src={files.type === 'application/pdf' ? pdf : URL.createObjectURL(files)}
                   height="50" 
                   width="50" 
                   alt="Preview"
@@ -238,4 +235,15 @@ export const FirebaseFileUploader = ({ apiKey, authDomain, appId, projectId, sto
       </section>
     </div>
   )
+}
+
+FirebaseFileUploader.propTypes = {
+  /** firebase storage instance. */
+  storage: PropTypes.object.isRequired,
+  /** accepted files types. */
+  accept: PropTypes.string,
+  /** allow multiple files */
+  multiple: PropTypes.bool,
+  /** directory to store the files */
+  path: PropTypes.string.isRequired,
 }
