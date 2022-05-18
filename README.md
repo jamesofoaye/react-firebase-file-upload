@@ -51,6 +51,14 @@ const App = () => {
         storage={storage}
       />
     </>
+    
+    {downloadURL && downloadURL.map((url, index) => (
+       <img
+          key={index}
+          src={url} 
+          alt="uploaded"
+       />
+    ))}
   )
 }
 
