@@ -11,7 +11,9 @@ npm install --save react-firebase-file-upload
 ```
 
 ## Usage
+
 ## React Applications
+
 After installing React Firebase File Upload, you need to set up the `DownloadURLProvider` at the root of your application. This can be either in your `index.jsx` or `index.tsx`
 
 ```jsx
@@ -29,6 +31,7 @@ function App() {
 ```
 
 ## Next.js Applications
+
 Go to `pages/_app.js` or `pages/_app.tsx` (create it if it doesn't exist) and wrap the Component with the DownloadURLProvider:
 ```jsx
 import { DownloadURLProvider } from 'react-firebase-file-upload';
