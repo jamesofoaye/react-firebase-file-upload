@@ -1,7 +1,7 @@
-import React, { useContext } from 'react'
+import React from 'react';
 import { initializeApp } from "firebase/app";
 import { getStorage } from "firebase/storage";
-import { FirebaseFileUploader, DownloadURLContext } from 'react-firebase-fileuploader'
+import { FirebaseFileUploader, useDownloadURL } from 'react-firebase-fileuploader'
 import 'react-firebase-fileuploader/dist/index.css'
 
 // Set the configuration for your app
@@ -18,8 +18,11 @@ const firebaseApp = initializeApp(firebaseConfig);
 const storage = getStorage(firebaseApp);
 
 const App = () => {
-  //file download url array for files uploaded
-  const  { downloadURL }  = useContext(DownloadURLContext)
+  // hook to get the download url
+  const  { downloadURL, setDownloadURL }  = useDownloadURL();
+
+  //reset download url array after sending download url to your database
+  setDownloadURL([]);
 
   return (
     <>

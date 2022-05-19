@@ -2,8 +2,10 @@ import React, { useState, createContext, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
-export const DownloadURLContext = createContext();
+//Download URL context
+const DownloadURLContext = createContext();
 
+//Download URL Context Provider
 export const DownloadURLProvider = ({ children }) => {
   const [downloadURL, setDownloadURL] = useState([]);
 
@@ -14,6 +16,13 @@ export const DownloadURLProvider = ({ children }) => {
   );
 };
 
+// Hook to get the context
+export const useDownloadURL = () => {
+  const { downloadURL, setDownloadURL } = useContext(DownloadURLContext);
+  return { downloadURL, setDownloadURL };
+};
+
+//File upload component
 export const FirebaseFileUploader = ({ storage, accept, multiple, path }) => {
   const [file, setFiles] = useState([]);
   const [uploadProgress, setUploadProgress] = useState({});
@@ -24,11 +33,15 @@ export const FirebaseFileUploader = ({ storage, accept, multiple, path }) => {
   const { setDownloadURL } = useContext(DownloadURLContext);
 
   useEffect(() => {
-    if (!storage) {
-      setErrorMessage('No firebase storage instance provided');
-    } else if(!path) {
-      setErrorMessage('No path provided');
-    } else setErrorMessage(null);
+    if(!storage) {
+      return setErrorMessage('No firebase storage instance provided');
+    }
+    
+    if(!path) {
+      return setErrorMessage('No path provided');
+    }
+
+    return setErrorMessage(null);
   }, [storage, path]);
 
   /** onChange event to set selected files */
