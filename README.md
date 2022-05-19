@@ -70,7 +70,7 @@ const firebaseApp = initializeApp(firebaseConfig);
 const storage = getStorage(firebaseApp);
 
 const App = () => {
-  // hook to get the download url
+  // hook to get array of download url
   const  { downloadURL, setDownloadURL }  = useDownloadURL();
 
   return (
@@ -99,6 +99,9 @@ const App = () => {
 
 export default App
 ```
+
+## Reset Download URL
+Use `setDownloadURL([])` to reset downloadURL after sending download url to your database
 
 ## License
 
