@@ -1,6 +1,6 @@
 # react-firebase-file-upload
 
->  Firebase File Upload
+>  Firebase V9 File Upload
 
 [![NPM](https://img.shields.io/npm/v/react-firebase-file-upload.svg)](https://www.npmjs.com/package/react-firebase-file-upload) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
@@ -50,10 +50,10 @@ export default MyApp
 ## Full Example
 
 ```jsx
-import React, { useContext } from 'react'
+import React from 'react'
 import { initializeApp } from "firebase/app";
 import { getStorage } from "firebase/storage";
-import { FirebaseFileUploader, DownloadURLContext } from 'react-firebase-fileuploader'
+import { FirebaseFileUploader, useDownloadURL } from 'react-firebase-fileuploader'
 import 'react-firebase-fileuploader/dist/index.css'
 
 // Set the configuration for your app
@@ -70,8 +70,8 @@ const firebaseApp = initializeApp(firebaseConfig);
 const storage = getStorage(firebaseApp);
 
 const App = () => {
-  //file download url array for files uploaded
-  const  { downloadURL }  = useContext(DownloadURLContext)
+  // hook to get the download url
+  const  { downloadURL, setDownloadURL }  = useDownloadURL();
 
   return (
     <>
