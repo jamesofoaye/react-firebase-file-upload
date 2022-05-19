@@ -6,7 +6,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jamesofoaye/react-firebase-fileuploader.git"
+    "url": "git+https://github.com/jamesofoaye/react-firebase-file-upload.git"
   },
   "main": "dist/index.js",
   "module": "dist/index.modern.js",
@@ -61,9 +61,9 @@
     "prop-types": "^15.8.1"
   },
   "bugs": {
-    "url": "https://github.com/jamesofoaye/react-firebase-fileuploader/issues"
+    "url": "https://github.com/jamesofoaye/react-firebase-file-upload/issues"
   },
-  "homepage": "https://github.com/jamesofoaye/react-firebase-fileuploader#readme",
+  "homepage": "https://github.com/jamesofoaye/react-firebase-file-upload#readme",
   "directories": {
     "example": "example"
   },
