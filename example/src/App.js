@@ -28,7 +28,7 @@ const App = () => {
     <>
       <FirebaseFileUploader
         // accepted files types
-        accept={["image/*", "application/*"]}
+        accept={["image/png", "image/jpeg"]}
         // allow multiple files
         multiple={true}
         // directory to store the files

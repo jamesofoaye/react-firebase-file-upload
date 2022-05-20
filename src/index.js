@@ -27,7 +27,7 @@ export const FirebaseFileUploader = ({ storage, accept, multiple, path }) => {
   const [file, setFiles] = useState([]);
   const [uploadProgress, setUploadProgress] = useState({});
   const [uploadStatus, setUploadStatus] = useState({})
-  const [errorMessage, setErrorMessage] = useState(!storage ? 'No firebase storage instance provided' : null);
+  const [errorMessage, setErrorMessage] = useState();
   const [loading, setLoading] = useState(false)
 
   const { setDownloadURL } = useContext(DownloadURLContext);
@@ -49,10 +49,36 @@ export const FirebaseFileUploader = ({ storage, accept, multiple, path }) => {
     const selectedFiles = event.target.files;
     const selectedFilesArray = Array.from(selectedFiles);
 
-    setFiles((previousFile) => previousFile.concat(selectedFilesArray));
+    //prevent selecting multiple files if multiple is false
+    if(!multiple) {
+      setFiles(selectedFilesArray.slice(0, 1));
+    }
+    //prevent selecting unsupported files
+    if(accept && accept.length > 0) {
+      const unsupportedFiles = selectedFilesArray.filter(file => !accept.includes(file.type));
+
+      if(unsupportedFiles.length > 0) {
+        setErrorMessage(`Unsupported file type: ${unsupportedFiles[0].type}`)
+        
+        const remainingFiles = selectedFilesArray.filter(file => !unsupportedFiles.includes(file));
+
+        return setFiles((previousFile) => previousFile.concat(remainingFiles));;
+      }
+      return setFiles((previousFile) => previousFile.concat(selectedFilesArray));
+    }
   };
 
-  /** reset states when finished uploading */
+  // disappear error message after 3 seconds if error message contains unsupported file type
+  useEffect(() => {
+    if(errorMessage && errorMessage.includes('Unsupported file type')) {
+      const timer = setTimeout(() => {
+        setErrorMessage(null);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [errorMessage]);
+
+  // reset states when finished uploading 
   const onFinishUpload = () => {
     setFiles([])
     setUploadProgress({})
@@ -60,7 +86,7 @@ export const FirebaseFileUploader = ({ storage, accept, multiple, path }) => {
     setErrorMessage('')
   };
 
-  /** upload files to firebase storage */
+  // upload files to firebase storage
   const onUpload = async () => {
 
     for (let i = 0; i < file.length; i++) {
