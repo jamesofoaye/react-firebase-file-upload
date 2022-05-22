@@ -56,7 +56,7 @@ parameter with wildcard characters soon.
 import React from 'react'
 import { initializeApp } from "firebase/app";
 import { getStorage } from "firebase/storage";
-import { FirebaseFileUploader, useDownloadURL } from 'react-firebase-fileuploader'
+import { FirebaseFileUploader, useDownloadURL } from 'react-firebase-file-upload'
 import 'react-firebase-fileuploader/dist/index.css'
 
 // Set the configuration for your app
