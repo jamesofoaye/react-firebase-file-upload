@@ -49,6 +49,9 @@ export default MyApp
 
 ## Full Example
 
+`Note` Please specify the exact file type you want to accept as shown the example below. Don't use wildcard characters such as `image/*` in accept parameter. For now, accept parameter will make sure users select `ONLY` the accepted files if you specified in full. I'm working on validating accept
+parameter with wildcard characters soon.
+
 ```jsx
 import React from 'react'
 import { initializeApp } from "firebase/app";
