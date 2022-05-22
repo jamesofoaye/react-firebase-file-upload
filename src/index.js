@@ -41,6 +41,12 @@ export const FirebaseFileUploader = ({ storage, accept, multiple, path }) => {
       return setErrorMessage('No path provided')
     }
 
+    if (!accept) {
+      return setErrorMessage(
+        'No accepted file types provided, provide an array of file types you want to accept'
+      )
+    }
+
     return setErrorMessage(null)
   }, [storage, path])
 
@@ -49,10 +55,6 @@ export const FirebaseFileUploader = ({ storage, accept, multiple, path }) => {
     const selectedFiles = event.target.files
     const selectedFilesArray = Array.from(selectedFiles)
 
-    //prevent selecting multiple files if multiple is false
-    if (!multiple) {
-      setFiles(selectedFilesArray.slice(0, 1))
-    }
     //prevent selecting unsupported files
     if (accept && accept.length > 0) {
       const unsupportedFiles = selectedFilesArray.filter(
@@ -68,6 +70,12 @@ export const FirebaseFileUploader = ({ storage, accept, multiple, path }) => {
 
         return setFiles((previousFile) => previousFile.concat(remainingFiles))
       }
+
+      //prevent selecting multiple files if multiple is false
+      if (!multiple) {
+        return setFiles(selectedFilesArray.slice(0, 1))
+      }
+
       return setFiles((previousFile) => previousFile.concat(selectedFilesArray))
     }
   }
@@ -350,7 +358,7 @@ FirebaseFileUploader.propTypes = {
   /** firebase storage instance. */
   storage: PropTypes.object.isRequired,
   /** accepted files types. */
-  accept: PropTypes.array,
+  accept: PropTypes.array.isRequired,
   /** allow multiple files */
   multiple: PropTypes.bool,
   /** directory to store the files */
