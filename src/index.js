@@ -285,7 +285,7 @@ export const FirebaseFileUploader = ({ storage, accept, multiple, path }) => {
                   </div>
                   <div className='overflow-hidden h-2 mb-1 text-xs flex rounded bg-white'>
                     <div
-                      className='shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center border-cyan-500 rounded-full'
+                      className='shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-cyan-500 rounded-full'
                       style={{
                         width: `${Math.round(uploadProgress[files.name])}%`
                       }}

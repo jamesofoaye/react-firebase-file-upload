@@ -176,6 +176,9 @@ var FirebaseFileUploader = function FirebaseFileUploader(_ref2) {
       loading = _useState6[0],
       setLoading = _useState6[1];
 
+  var _useContext2 = React.useContext(DownloadURLContext),
+      setDownloadURL = _useContext2.setDownloadURL;
+
   React.useEffect(function () {
     if (!storage$1) {
       return setErrorMessage('No firebase storage instance provided');
@@ -392,7 +395,7 @@ var FirebaseFileUploader = function FirebaseFileUploader(_ref2) {
     }, Math.round(uploadProgress[files.name]), "%"))), /*#__PURE__*/React__default.createElement("div", {
       className: "overflow-hidden h-2 mb-1 text-xs flex rounded bg-white"
     }, /*#__PURE__*/React__default.createElement("div", {
-      className: "shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-green rounded-full",
+      className: "shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-cyan-500 rounded-full",
       style: {
         width: Math.round(uploadProgress[files.name]) + "%"
       }
