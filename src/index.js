@@ -181,8 +181,8 @@ export const FirebaseFileUploader = ({ storage, accept, multiple, path }) => {
 
   return (
     <div>
-      <section className='text-black my-8 pb-4 mx-2 bg-white rounded-md max-w-md overflow-y-auto h-auto'>
-        <label className='flex cursor-pointer border-2 border-cyan-500 mx-auto justify-center items-center rounded-xl w-44 h-12 text-lg text-cyan-500 font-semibold'>
+      <section className='text-black pb-4 mx-2 bg-white rounded-md overflow-y-auto h-auto'>
+        <label className='flex cursor-pointer border-2 border-cyan-500 justify-center items-center rounded-xl w-44 h-12 text-lg text-cyan-500 font-semibold'>
           <svg
             xmlns='http://www.w3.org/2000/svg'
             className='h-6 w-6 mr-2'
@@ -205,7 +205,7 @@ export const FirebaseFileUploader = ({ storage, accept, multiple, path }) => {
             multiple={multiple}
             accept={accept}
             className='hidden'
-            disabled={!storage || !path}
+            disabled={!storage || !path || !accept}
           />
         </label>
 
@@ -218,7 +218,7 @@ export const FirebaseFileUploader = ({ storage, accept, multiple, path }) => {
         {file?.map((files, index) => {
           return (
             <div key={index} className='border-b border-slate-800'>
-              <div className='flex py-2 max-w-md mx-auto'>
+              <div className='flex py-2'>
                 <button
                   onClick={() => {
                     setFiles(file.filter((e) => e !== files))
@@ -300,7 +300,7 @@ export const FirebaseFileUploader = ({ storage, accept, multiple, path }) => {
             <div className='flex'>
               {!loading ? (
                 <button
-                  className='bg-cyan-500 hover:shadow-lg shadow-cyan-500/50 flex text-white font-bold py-2 px-4 rounded mt-5 mx-auto'
+                  className='bg-cyan-500 hover:shadow-lg shadow-cyan-500/50 flex text-white font-bold py-2 px-4 rounded mt-5'
                   onClick={onUpload}
                 >
                   <svg
@@ -320,7 +320,7 @@ export const FirebaseFileUploader = ({ storage, accept, multiple, path }) => {
                   Upload
                 </button>
               ) : (
-                <button className='py-2 px-4 rounded mt-5 mx-auto flex justify-center items-center bg-cyan-500 hover:shadow-lg shadow-cyan-500/50 text-white text-center'>
+                <button className='py-2 px-4 rounded mt-5 flex justify-center items-center bg-cyan-500 hover:shadow-lg shadow-cyan-500/50 text-white text-center'>
                   <svg
                     width='20'
                     height='20'
@@ -338,7 +338,7 @@ export const FirebaseFileUploader = ({ storage, accept, multiple, path }) => {
               {/** Reset States When Done Uploading */}
               {uploadStatus[file[0].name] === 'success' && (
                 <button
-                  className='bg-cyan-500 hover:shadow-lg shadow-cyan-500/50 flex text-white font-bold py-2 px-4 rounded mt-5 mx-auto'
+                  className='bg-cyan-500 hover:shadow-lg shadow-cyan-500/50 flex text-white font-bold py-2 px-4 rounded mt-5 mx-2'
                   onClick={onFinishUpload}
                 >
                   Done

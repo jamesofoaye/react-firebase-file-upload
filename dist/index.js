@@ -309,9 +309,9 @@ var FirebaseFileUploader = function FirebaseFileUploader(_ref2) {
   };
 
   return /*#__PURE__*/React__default.createElement("div", null, /*#__PURE__*/React__default.createElement("section", {
-    className: "text-black my-8 pb-4 mx-2 bg-white rounded-md max-w-md overflow-y-auto h-auto"
+    className: "text-black pb-4 mx-2 bg-white rounded-md overflow-y-auto h-auto"
   }, /*#__PURE__*/React__default.createElement("label", {
-    className: "flex cursor-pointer border-2 border-cyan-500 mx-auto justify-center items-center rounded-xl w-44 h-12 text-lg text-cyan-500 font-semibold"
+    className: "flex cursor-pointer border-2 border-cyan-500 justify-center items-center rounded-xl w-44 h-12 text-lg text-cyan-500 font-semibold"
   }, /*#__PURE__*/React__default.createElement("svg", {
     xmlns: "http://www.w3.org/2000/svg",
     className: "h-6 w-6 mr-2",
@@ -330,7 +330,7 @@ var FirebaseFileUploader = function FirebaseFileUploader(_ref2) {
     multiple: multiple,
     accept: accept,
     className: "hidden",
-    disabled: !storage$1 || !path
+    disabled: !storage$1 || !path || !accept
   })), /*#__PURE__*/React__default.createElement("div", {
     className: "flex flex-wrap justify-center mt-4"
   }, errorMessage && /*#__PURE__*/React__default.createElement("p", {
@@ -340,7 +340,7 @@ var FirebaseFileUploader = function FirebaseFileUploader(_ref2) {
       key: index,
       className: "border-b border-slate-800"
     }, /*#__PURE__*/React__default.createElement("div", {
-      className: "flex py-2 max-w-md mx-auto"
+      className: "flex py-2"
     }, /*#__PURE__*/React__default.createElement("button", {
       onClick: function onClick() {
         setFiles(file.filter(function (e) {
@@ -400,7 +400,7 @@ var FirebaseFileUploader = function FirebaseFileUploader(_ref2) {
   }), file.length > 0 && /*#__PURE__*/React__default.createElement(React__default.Fragment, null, /*#__PURE__*/React__default.createElement("div", {
     className: "flex"
   }, !loading ? /*#__PURE__*/React__default.createElement("button", {
-    className: "bg-cyan-500 hover:shadow-lg shadow-cyan-500/50 flex text-white font-bold py-2 px-4 rounded mt-5 mx-auto",
+    className: "bg-cyan-500 hover:shadow-lg shadow-cyan-500/50 flex text-white font-bold py-2 px-4 rounded mt-5",
     onClick: onUpload
   }, /*#__PURE__*/React__default.createElement("svg", {
     xmlns: "http://www.w3.org/2000/svg",
@@ -414,7 +414,7 @@ var FirebaseFileUploader = function FirebaseFileUploader(_ref2) {
     strokeLinejoin: "round",
     d: "M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
   })), "Upload") : /*#__PURE__*/React__default.createElement("button", {
-    className: "py-2 px-4 rounded mt-5 mx-auto flex justify-center items-center bg-cyan-500 hover:shadow-lg shadow-cyan-500/50 text-white text-center"
+    className: "py-2 px-4 rounded mt-5 flex justify-center items-center bg-cyan-500 hover:shadow-lg shadow-cyan-500/50 text-white text-center"
   }, /*#__PURE__*/React__default.createElement("svg", {
     width: "20",
     height: "20",
@@ -425,7 +425,7 @@ var FirebaseFileUploader = function FirebaseFileUploader(_ref2) {
   }, /*#__PURE__*/React__default.createElement("path", {
     d: "M526 1394q0 53-37.5 90.5t-90.5 37.5q-52 0-90-38t-38-90q0-53 37.5-90.5t90.5-37.5 90.5 37.5 37.5 90.5zm498 206q0 53-37.5 90.5t-90.5 37.5-90.5-37.5-37.5-90.5 37.5-90.5 90.5-37.5 90.5 37.5 37.5 90.5zm-704-704q0 53-37.5 90.5t-90.5 37.5-90.5-37.5-37.5-90.5 37.5-90.5 90.5-37.5 90.5 37.5 37.5 90.5zm1202 498q0 52-38 90t-90 38q-53 0-90.5-37.5t-37.5-90.5 37.5-90.5 90.5-37.5 90.5 37.5 37.5 90.5zm-964-996q0 66-47 113t-113 47-113-47-47-113 47-113 113-47 113 47 47 113zm1170 498q0 53-37.5 90.5t-90.5 37.5-90.5-37.5-37.5-90.5 37.5-90.5 90.5-37.5 90.5 37.5 37.5 90.5zm-640-704q0 80-56 136t-136 56-136-56-56-136 56-136 136-56 136 56 56 136zm530 206q0 93-66 158.5t-158 65.5q-93 0-158.5-65.5t-65.5-158.5q0-92 65.5-158t158.5-66q92 0 158 66t66 158z"
   })), "Uploading"), uploadStatus[file[0].name] === 'success' && /*#__PURE__*/React__default.createElement("button", {
-    className: "bg-cyan-500 hover:shadow-lg shadow-cyan-500/50 flex text-white font-bold py-2 px-4 rounded mt-5 mx-auto",
+    className: "bg-cyan-500 hover:shadow-lg shadow-cyan-500/50 flex text-white font-bold py-2 px-4 rounded mt-5 mx-2",
     onClick: onFinishUpload
   }, "Done")))));
 };

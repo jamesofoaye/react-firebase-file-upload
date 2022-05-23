@@ -2,40 +2,178 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 
-const DownloadURLContext = createContext();
-const DownloadURLProvider = ({
-  children
-}) => {
-  const [downloadURL, setDownloadURL] = useState([]);
+function _extends() {
+  _extends = Object.assign || function (target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i];
+
+      for (var key in source) {
+        if (Object.prototype.hasOwnProperty.call(source, key)) {
+          target[key] = source[key];
+        }
+      }
+    }
+
+    return target;
+  };
+
+  return _extends.apply(this, arguments);
+}
+
+// A type of promise-like that resolves synchronously and supports only one observer
+const _Pact = /*#__PURE__*/(function() {
+	function _Pact() {}
+	_Pact.prototype.then = function(onFulfilled, onRejected) {
+		const result = new _Pact();
+		const state = this.s;
+		if (state) {
+			const callback = state & 1 ? onFulfilled : onRejected;
+			if (callback) {
+				try {
+					_settle(result, 1, callback(this.v));
+				} catch (e) {
+					_settle(result, 2, e);
+				}
+				return result;
+			} else {
+				return this;
+			}
+		}
+		this.o = function(_this) {
+			try {
+				const value = _this.v;
+				if (_this.s & 1) {
+					_settle(result, 1, onFulfilled ? onFulfilled(value) : value);
+				} else if (onRejected) {
+					_settle(result, 1, onRejected(value));
+				} else {
+					_settle(result, 2, value);
+				}
+			} catch (e) {
+				_settle(result, 2, e);
+			}
+		};
+		return result;
+	};
+	return _Pact;
+})();
+
+// Settles a pact synchronously
+function _settle(pact, state, value) {
+	if (!pact.s) {
+		if (value instanceof _Pact) {
+			if (value.s) {
+				if (state & 1) {
+					state = value.s;
+				}
+				value = value.v;
+			} else {
+				value.o = _settle.bind(null, pact, state);
+				return;
+			}
+		}
+		if (value && value.then) {
+			value.then(_settle.bind(null, pact, state), _settle.bind(null, pact, 2));
+			return;
+		}
+		pact.s = state;
+		pact.v = value;
+		const observer = pact.o;
+		if (observer) {
+			observer(pact);
+		}
+	}
+}
+
+function _isSettledPact(thenable) {
+	return thenable instanceof _Pact && thenable.s & 1;
+}
+
+// Asynchronously iterate through an object that has a length property, passing the index as the first argument to the callback (even as the length property changes)
+function _forTo(array, body, check) {
+	var i = -1, pact, reject;
+	function _cycle(result) {
+		try {
+			while (++i < array.length && (!check || !check())) {
+				result = body(i);
+				if (result && result.then) {
+					if (_isSettledPact(result)) {
+						result = result.v;
+					} else {
+						result.then(_cycle, reject || (reject = _settle.bind(null, pact = new _Pact(), 2)));
+						return;
+					}
+				}
+			}
+			if (pact) {
+				_settle(pact, 1, result);
+			} else {
+				pact = result;
+			}
+		} catch (e) {
+			_settle(pact || (pact = new _Pact()), 2, e);
+		}
+	}
+	_cycle();
+	return pact;
+}
+
+const _iteratorSymbol = /*#__PURE__*/ typeof Symbol !== "undefined" ? (Symbol.iterator || (Symbol.iterator = Symbol("Symbol.iterator"))) : "@@iterator";
+
+const _asyncIteratorSymbol = /*#__PURE__*/ typeof Symbol !== "undefined" ? (Symbol.asyncIterator || (Symbol.asyncIterator = Symbol("Symbol.asyncIterator"))) : "@@asyncIterator";
+
+var DownloadURLContext = createContext();
+var DownloadURLProvider = function DownloadURLProvider(_ref) {
+  var children = _ref.children;
+
+  var _useState = useState([]),
+      downloadURL = _useState[0],
+      setDownloadURL = _useState[1];
+
   return /*#__PURE__*/React.createElement(DownloadURLContext.Provider, {
     value: {
-      downloadURL,
-      setDownloadURL
+      downloadURL: downloadURL,
+      setDownloadURL: setDownloadURL
     }
   }, children);
 };
-const useDownloadURL = () => {
-  const {
-    downloadURL,
-    setDownloadURL
-  } = useContext(DownloadURLContext);
+var useDownloadURL = function useDownloadURL() {
+  var _useContext = useContext(DownloadURLContext),
+      downloadURL = _useContext.downloadURL,
+      setDownloadURL = _useContext.setDownloadURL;
+
   return {
-    downloadURL,
-    setDownloadURL
+    downloadURL: downloadURL,
+    setDownloadURL: setDownloadURL
   };
 };
-const FirebaseFileUploader = ({
-  storage,
-  accept,
-  multiple,
-  path
-}) => {
-  const [file, setFiles] = useState([]);
-  const [uploadProgress, setUploadProgress] = useState({});
-  const [uploadStatus, setUploadStatus] = useState({});
-  const [errorMessage, setErrorMessage] = useState();
-  const [loading, setLoading] = useState(false);
-  useEffect(() => {
+var FirebaseFileUploader = function FirebaseFileUploader(_ref2) {
+  var storage = _ref2.storage,
+      accept = _ref2.accept,
+      multiple = _ref2.multiple,
+      path = _ref2.path;
+
+  var _useState2 = useState([]),
+      file = _useState2[0],
+      setFiles = _useState2[1];
+
+  var _useState3 = useState({}),
+      uploadProgress = _useState3[0],
+      setUploadProgress = _useState3[1];
+
+  var _useState4 = useState({}),
+      uploadStatus = _useState4[0],
+      setUploadStatus = _useState4[1];
+
+  var _useState5 = useState(),
+      errorMessage = _useState5[0],
+      setErrorMessage = _useState5[1];
+
+  var _useState6 = useState(false),
+      loading = _useState6[0],
+      setLoading = _useState6[1];
+
+  useEffect(function () {
     if (!storage) {
       return setErrorMessage('No firebase storage instance provided');
     }
@@ -51,100 +189,126 @@ const FirebaseFileUploader = ({
     return setErrorMessage(null);
   }, [storage, path, accept]);
 
-  const onSelectFile = event => {
-    const selectedFiles = event.target.files;
-    const selectedFilesArray = Array.from(selectedFiles);
+  var onSelectFile = function onSelectFile(event) {
+    var selectedFiles = event.target.files;
+    var selectedFilesArray = Array.from(selectedFiles);
 
     if (accept && accept.length > 0) {
-      const unsupportedFiles = selectedFilesArray.filter(file => !accept.includes(file.type));
+      var unsupportedFiles = selectedFilesArray.filter(function (file) {
+        return !accept.includes(file.type);
+      });
 
       if (unsupportedFiles.length > 0) {
-        setErrorMessage(`Unsupported file type: ${unsupportedFiles[0].type}`);
-        const remainingFiles = selectedFilesArray.filter(file => !unsupportedFiles.includes(file));
-        return setFiles(previousFile => previousFile.concat(remainingFiles));
+        setErrorMessage("Unsupported file type: " + unsupportedFiles[0].type);
+        var remainingFiles = selectedFilesArray.filter(function (file) {
+          return !unsupportedFiles.includes(file);
+        });
+        return setFiles(function (previousFile) {
+          return previousFile.concat(remainingFiles);
+        });
       }
 
       if (!multiple) {
         return setFiles(selectedFilesArray.slice(0, 1));
       }
 
-      return setFiles(previousFile => previousFile.concat(selectedFilesArray));
+      return setFiles(function (previousFile) {
+        return previousFile.concat(selectedFilesArray);
+      });
     }
   };
 
-  useEffect(() => {
+  useEffect(function () {
     if (errorMessage && errorMessage.includes('Unsupported file type')) {
-      const timer = setTimeout(() => {
+      var timer = setTimeout(function () {
         setErrorMessage(null);
       }, 3000);
-      return () => clearTimeout(timer);
+      return function () {
+        return clearTimeout(timer);
+      };
     }
   }, [errorMessage]);
 
-  const onFinishUpload = () => {
+  var onFinishUpload = function onFinishUpload() {
     setFiles([]);
     setUploadProgress({});
     setUploadStatus({});
     setErrorMessage('');
   };
 
-  const onUpload = async () => {
-    for (let i = 0; i < file.length; i++) {
-      const storageRef = ref(storage, `${path}/${file[i].name}`);
+  var onUpload = function onUpload() {
+    try {
+      return Promise.resolve(_forTo(file, function (i) {
+        var storageRef = ref(storage, path + "/" + file[i].name);
 
-      if (uploadStatus[file[i].name] === undefined) {
-        setLoading(true);
-        const uploadTask = uploadBytesResumable(storageRef, file[i]);
-        uploadTask.on('state_changed', snapshot => {
-          const progress = snapshot.bytesTransferred / snapshot.totalBytes * 100;
-          setUploadProgress(prevProgress => ({ ...prevProgress,
-            [file[i].name]: progress
-          }));
+        var _temp = function () {
+          if (uploadStatus[file[i].name] === undefined) {
+            setLoading(true);
+            var uploadTask = uploadBytesResumable(storageRef, file[i]);
+            uploadTask.on('state_changed', function (snapshot) {
+              var progress = snapshot.bytesTransferred / snapshot.totalBytes * 100;
+              setUploadProgress(function (prevProgress) {
+                var _extends2;
 
-          switch (snapshot.state) {
-            case 'paused':
-              console.log('Upload is paused');
-              break;
+                return _extends({}, prevProgress, (_extends2 = {}, _extends2[file[i].name] = progress, _extends2));
+              });
 
-            case 'running':
-              console.log('Upload is running');
-              break;
+              switch (snapshot.state) {
+                case 'paused':
+                  console.log('Upload is paused');
+                  break;
+
+                case 'running':
+                  console.log('Upload is running');
+                  break;
+              }
+            }, function (error) {
+              switch (error.code) {
+                case 'storage/unauthorized':
+                  setErrorMessage("User doesn't have permission to access the object");
+                  setLoading(false);
+                  break;
+
+                case 'storage/canceled':
+                  setErrorMessage('User canceled the upload');
+                  setLoading(false);
+                  break;
+
+                case 'storage/unknown':
+                  setErrorMessage('Unknown error occurred, inspect error.serverResponse');
+                  setLoading(false);
+                  break;
+              }
+            }, function () {
+              getDownloadURL(uploadTask.snapshot.ref).then(function (download_url) {
+                setDownloadURL(function (prevURL) {
+                  return [].concat(prevURL, [download_url]);
+                });
+                setLoading(false);
+              });
+            });
+            return Promise.resolve(uploadTask).then(function (_uploadTask) {
+              var state = _uploadTask.state;
+              setUploadStatus(function (prevStatus) {
+                var _extends3;
+
+                return _extends({}, prevStatus, (_extends3 = {}, _extends3[file[i].name] = state, _extends3));
+              });
+            });
           }
-        }, error => {
-          switch (error.code) {
-            case 'storage/unauthorized':
-              setErrorMessage("User doesn't have permission to access the object");
-              setLoading(false);
-              break;
+        }();
 
-            case 'storage/canceled':
-              setErrorMessage('User canceled the upload');
-              setLoading(false);
-              break;
-
-            case 'storage/unknown':
-              setErrorMessage('Unknown error occurred, inspect error.serverResponse');
-              setLoading(false);
-              break;
-          }
-        }, () => {
-          getDownloadURL(uploadTask.snapshot.ref).then(download_url => {
-            setDownloadURL(prevURL => [...prevURL, download_url]);
-            setLoading(false);
-          });
-        });
-        const state = (await uploadTask).state;
-        setUploadStatus(prevStatus => ({ ...prevStatus,
-          [file[i].name]: state
-        }));
-      }
+        if (_temp && _temp.then) return _temp.then(function () {});
+      }));
+    } catch (e) {
+      return Promise.reject(e);
     }
   };
 
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("section", {
-    className: "text-black my-8 pb-4 mx-2 bg-white rounded-md max-w-md overflow-y-auto h-auto"
+    className: "text-black pb-4 mx-2 bg-white rounded-md overflow-y-auto h-auto"
   }, /*#__PURE__*/React.createElement("label", {
-    className: "flex cursor-pointer border-2 border-cyan-500 mx-auto justify-center items-center rounded-xl w-44 h-12 text-lg text-cyan-500 font-semibold"
+    className: "flex cursor-pointer border-2 border-cyan-500 justify-center items-center rounded-xl w-44 h-12 text-lg text-cyan-500 font-semibold"
   }, /*#__PURE__*/React.createElement("svg", {
     xmlns: "http://www.w3.org/2000/svg",
     className: "h-6 w-6 mr-2",
@@ -163,20 +327,22 @@ const FirebaseFileUploader = ({
     multiple: multiple,
     accept: accept,
     className: "hidden",
-    disabled: !storage || !path
+    disabled: !storage || !path || !accept
   })), /*#__PURE__*/React.createElement("div", {
     className: "flex flex-wrap justify-center mt-4"
   }, errorMessage && /*#__PURE__*/React.createElement("p", {
     className: "text-red-600 text-center"
-  }, errorMessage)), file === null || file === void 0 ? void 0 : file.map((files, index) => {
+  }, errorMessage)), file === null || file === void 0 ? void 0 : file.map(function (files, index) {
     return /*#__PURE__*/React.createElement("div", {
       key: index,
       className: "border-b border-slate-800"
     }, /*#__PURE__*/React.createElement("div", {
-      className: "flex py-2 max-w-md mx-auto"
+      className: "flex py-2"
     }, /*#__PURE__*/React.createElement("button", {
-      onClick: () => {
-        setFiles(file.filter(e => e !== files));
+      onClick: function onClick() {
+        setFiles(file.filter(function (e) {
+          return e !== files;
+        }));
       },
       className: "flex items-center justify-center translate-x-3 -translate-y-1 border text-md text-white font-bold border-white bg-red-600 text-center h-6 w-6 rounded-full"
     }, "X"), files.type === 'application/pdf' ? /*#__PURE__*/React.createElement("svg", {
@@ -225,13 +391,13 @@ const FirebaseFileUploader = ({
     }, /*#__PURE__*/React.createElement("div", {
       className: "shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-green rounded-full",
       style: {
-        width: `${Math.round(uploadProgress[files.name])}%`
+        width: Math.round(uploadProgress[files.name]) + "%"
       }
     }))));
   }), file.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     className: "flex"
   }, !loading ? /*#__PURE__*/React.createElement("button", {
-    className: "bg-cyan-500 hover:shadow-lg shadow-cyan-500/50 flex text-white font-bold py-2 px-4 rounded mt-5 mx-auto",
+    className: "bg-cyan-500 hover:shadow-lg shadow-cyan-500/50 flex text-white font-bold py-2 px-4 rounded mt-5",
     onClick: onUpload
   }, /*#__PURE__*/React.createElement("svg", {
     xmlns: "http://www.w3.org/2000/svg",
@@ -245,7 +411,7 @@ const FirebaseFileUploader = ({
     strokeLinejoin: "round",
     d: "M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
   })), "Upload") : /*#__PURE__*/React.createElement("button", {
-    className: "py-2 px-4 rounded mt-5 mx-auto flex justify-center items-center bg-cyan-500 hover:shadow-lg shadow-cyan-500/50 text-white text-center"
+    className: "py-2 px-4 rounded mt-5 flex justify-center items-center bg-cyan-500 hover:shadow-lg shadow-cyan-500/50 text-white text-center"
   }, /*#__PURE__*/React.createElement("svg", {
     width: "20",
     height: "20",
@@ -256,7 +422,7 @@ const FirebaseFileUploader = ({
   }, /*#__PURE__*/React.createElement("path", {
     d: "M526 1394q0 53-37.5 90.5t-90.5 37.5q-52 0-90-38t-38-90q0-53 37.5-90.5t90.5-37.5 90.5 37.5 37.5 90.5zm498 206q0 53-37.5 90.5t-90.5 37.5-90.5-37.5-37.5-90.5 37.5-90.5 90.5-37.5 90.5 37.5 37.5 90.5zm-704-704q0 53-37.5 90.5t-90.5 37.5-90.5-37.5-37.5-90.5 37.5-90.5 90.5-37.5 90.5 37.5 37.5 90.5zm1202 498q0 52-38 90t-90 38q-53 0-90.5-37.5t-37.5-90.5 37.5-90.5 90.5-37.5 90.5 37.5 37.5 90.5zm-964-996q0 66-47 113t-113 47-113-47-47-113 47-113 113-47 113 47 47 113zm1170 498q0 53-37.5 90.5t-90.5 37.5-90.5-37.5-37.5-90.5 37.5-90.5 90.5-37.5 90.5 37.5 37.5 90.5zm-640-704q0 80-56 136t-136 56-136-56-56-136 56-136 136-56 136 56 56 136zm530 206q0 93-66 158.5t-158 65.5q-93 0-158.5-65.5t-65.5-158.5q0-92 65.5-158t158.5-66q92 0 158 66t66 158z"
   })), "Uploading"), uploadStatus[file[0].name] === 'success' && /*#__PURE__*/React.createElement("button", {
-    className: "bg-cyan-500 hover:shadow-lg shadow-cyan-500/50 flex text-white font-bold py-2 px-4 rounded mt-5 mx-auto",
+    className: "bg-cyan-500 hover:shadow-lg shadow-cyan-500/50 flex text-white font-bold py-2 px-4 rounded mt-5 mx-2",
     onClick: onFinishUpload
   }, "Done")))));
 };
