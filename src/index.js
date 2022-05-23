@@ -30,8 +30,6 @@ export const FirebaseFileUploader = ({ storage, accept, multiple, path }) => {
   const [errorMessage, setErrorMessage] = useState()
   const [loading, setLoading] = useState(false)
 
-  const { setDownloadURL } = useContext(DownloadURLContext)
-
   useEffect(() => {
     if (!storage) {
       return setErrorMessage('No firebase storage instance provided')
@@ -48,7 +46,7 @@ export const FirebaseFileUploader = ({ storage, accept, multiple, path }) => {
     }
 
     return setErrorMessage(null)
-  }, [storage, path])
+  }, [storage, path, accept])
 
   /** onChange event to set selected files */
   const onSelectFile = (event) => {
