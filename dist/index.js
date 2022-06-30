@@ -150,9 +150,8 @@ var useDownloadURL = function useDownloadURL() {
     setDownloadURL: setDownloadURL
   };
 };
-var FirebaseFileUploader = function FirebaseFileUploader(_ref2) {
-  var storage$1 = _ref2.storage,
-      accept = _ref2.accept,
+var useFileUpload = function useFileUpload(storage$1, _ref2) {
+  var accept = _ref2.accept,
       multiple = _ref2.multiple,
       path = _ref2.path;
 
@@ -168,7 +167,7 @@ var FirebaseFileUploader = function FirebaseFileUploader(_ref2) {
       uploadStatus = _useState4[0],
       setUploadStatus = _useState4[1];
 
-  var _useState5 = React.useState(),
+  var _useState5 = React.useState(null),
       errorMessage = _useState5[0],
       setErrorMessage = _useState5[1];
 
@@ -176,8 +175,8 @@ var FirebaseFileUploader = function FirebaseFileUploader(_ref2) {
       loading = _useState6[0],
       setLoading = _useState6[1];
 
-  var _useContext2 = React.useContext(DownloadURLContext),
-      setDownloadURL = _useContext2.setDownloadURL;
+  var _useDownloadURL = useDownloadURL(),
+      setDownloadURL = _useDownloadURL.setDownloadURL;
 
   React.useEffect(function () {
     if (!storage$1) {
@@ -194,12 +193,22 @@ var FirebaseFileUploader = function FirebaseFileUploader(_ref2) {
 
     return setErrorMessage(null);
   }, [storage$1, path, accept]);
+  React.useEffect(function () {
+    if (errorMessage !== null && errorMessage !== void 0 && errorMessage.includes('Unsupported file type')) {
+      var timer = setTimeout(function () {
+        setErrorMessage(null);
+      }, 3000);
+      return function () {
+        return clearTimeout(timer);
+      };
+    }
+  }, [errorMessage]);
 
   var onSelectFile = function onSelectFile(event) {
     var selectedFiles = event.target.files;
     var selectedFilesArray = Array.from(selectedFiles);
 
-    if (accept && accept.length > 0) {
+    if ((accept === null || accept === void 0 ? void 0 : accept.length) > 0) {
       var unsupportedFiles = selectedFilesArray.filter(function (file) {
         return !accept.includes(file.type);
       });
@@ -223,17 +232,6 @@ var FirebaseFileUploader = function FirebaseFileUploader(_ref2) {
       });
     }
   };
-
-  React.useEffect(function () {
-    if (errorMessage && errorMessage.includes('Unsupported file type')) {
-      var timer = setTimeout(function () {
-        setErrorMessage(null);
-      }, 3000);
-      return function () {
-        return clearTimeout(timer);
-      };
-    }
-  }, [errorMessage]);
 
   var onFinishUpload = function onFinishUpload() {
     setFiles([]);
@@ -305,6 +303,181 @@ var FirebaseFileUploader = function FirebaseFileUploader(_ref2) {
         }();
 
         if (_temp && _temp.then) return _temp.then(function () {});
+      }));
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  };
+
+  return {
+    type: 'file',
+    accept: accept,
+    multiple: multiple,
+    disabled: !storage$1 || !path || !accept,
+    onChange: onSelectFile,
+    files: file,
+    loading: loading,
+    error: errorMessage,
+    progress: uploadProgress,
+    status: uploadStatus,
+    upload: onUpload,
+    finishUpload: onFinishUpload
+  };
+};
+var FirebaseFileUploader = function FirebaseFileUploader(_ref3) {
+  var storage$1 = _ref3.storage,
+      accept = _ref3.accept,
+      multiple = _ref3.multiple,
+      path = _ref3.path;
+
+  var _useState7 = React.useState([]),
+      file = _useState7[0],
+      setFiles = _useState7[1];
+
+  var _useState8 = React.useState({}),
+      uploadProgress = _useState8[0],
+      setUploadProgress = _useState8[1];
+
+  var _useState9 = React.useState({}),
+      uploadStatus = _useState9[0],
+      setUploadStatus = _useState9[1];
+
+  var _useState10 = React.useState(null),
+      errorMessage = _useState10[0],
+      setErrorMessage = _useState10[1];
+
+  var _useState11 = React.useState(false),
+      loading = _useState11[0],
+      setLoading = _useState11[1];
+
+  var _useDownloadURL2 = useDownloadURL(),
+      setDownloadURL = _useDownloadURL2.setDownloadURL;
+
+  React.useEffect(function () {
+    if (!storage$1) {
+      return setErrorMessage('No firebase storage instance provided');
+    }
+
+    if (!path) {
+      return setErrorMessage('No path provided');
+    }
+
+    if (!accept) {
+      return setErrorMessage('No accepted file types provided, provide an array of file types you want to accept');
+    }
+
+    return setErrorMessage(null);
+  }, [storage$1, path, accept]);
+  React.useEffect(function () {
+    if (errorMessage !== null && errorMessage !== void 0 && errorMessage.includes('Unsupported file type')) {
+      var timer = setTimeout(function () {
+        setErrorMessage(null);
+      }, 3000);
+      return function () {
+        return clearTimeout(timer);
+      };
+    }
+  }, [errorMessage]);
+
+  var onSelectFile = function onSelectFile(event) {
+    var selectedFiles = event.target.files;
+    var selectedFilesArray = Array.from(selectedFiles);
+
+    if ((accept === null || accept === void 0 ? void 0 : accept.length) > 0) {
+      var unsupportedFiles = selectedFilesArray.filter(function (file) {
+        return !accept.includes(file.type);
+      });
+
+      if (unsupportedFiles.length > 0) {
+        setErrorMessage("Unsupported file type: " + unsupportedFiles[0].type);
+        var remainingFiles = selectedFilesArray.filter(function (file) {
+          return !unsupportedFiles.includes(file);
+        });
+        return setFiles(function (previousFile) {
+          return previousFile.concat(remainingFiles);
+        });
+      }
+
+      if (!multiple) {
+        return setFiles(selectedFilesArray.slice(0, 1));
+      }
+
+      return setFiles(function (previousFile) {
+        return previousFile.concat(selectedFilesArray);
+      });
+    }
+  };
+
+  var onFinishUpload = function onFinishUpload() {
+    setFiles([]);
+    setUploadProgress({});
+    setUploadStatus({});
+    setErrorMessage('');
+  };
+
+  var onUpload = function onUpload() {
+    try {
+      return Promise.resolve(_forTo(file, function (i) {
+        var storageRef = storage.ref(storage$1, path + "/" + file[i].name);
+
+        var _temp2 = function () {
+          if (uploadStatus[file[i].name] === undefined) {
+            setLoading(true);
+            var uploadTask = storage.uploadBytesResumable(storageRef, file[i]);
+            uploadTask.on('state_changed', function (snapshot) {
+              var progress = snapshot.bytesTransferred / snapshot.totalBytes * 100;
+              setUploadProgress(function (prevProgress) {
+                var _extends4;
+
+                return _extends({}, prevProgress, (_extends4 = {}, _extends4[file[i].name] = progress, _extends4));
+              });
+
+              switch (snapshot.state) {
+                case 'paused':
+                  console.log('Upload is paused');
+                  break;
+
+                case 'running':
+                  console.log('Upload is running');
+                  break;
+              }
+            }, function (error) {
+              switch (error.code) {
+                case 'storage/unauthorized':
+                  setErrorMessage("User doesn't have permission to access the object");
+                  setLoading(false);
+                  break;
+
+                case 'storage/canceled':
+                  setErrorMessage('User canceled the upload');
+                  setLoading(false);
+                  break;
+
+                case 'storage/unknown':
+                  setErrorMessage('Unknown error occurred, inspect error.serverResponse');
+                  setLoading(false);
+                  break;
+              }
+            }, function () {
+              storage.getDownloadURL(uploadTask.snapshot.ref).then(function (download_url) {
+                setDownloadURL(function (prevURL) {
+                  return [].concat(prevURL, [download_url]);
+                });
+                setLoading(false);
+              });
+            });
+            return Promise.resolve(uploadTask).then(function (_uploadTask2) {
+              var state = _uploadTask2.state;
+              setUploadStatus(function (prevStatus) {
+                var _extends5;
+
+                return _extends({}, prevStatus, (_extends5 = {}, _extends5[file[i].name] = state, _extends5));
+              });
+            });
+          }
+        }();
+
+        if (_temp2 && _temp2.then) return _temp2.then(function () {});
       }));
     } catch (e) {
       return Promise.reject(e);
@@ -442,4 +615,5 @@ FirebaseFileUploader.propTypes = {
 exports.DownloadURLProvider = DownloadURLProvider;
 exports.FirebaseFileUploader = FirebaseFileUploader;
 exports.useDownloadURL = useDownloadURL;
+exports.useFileUpload = useFileUpload;
 //# sourceMappingURL=index.js.map
