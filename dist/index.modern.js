@@ -307,6 +307,7 @@ var useFileUpload = function useFileUpload(storage, _ref2) {
     }
   };
 
+  var lastFile = file[file.length - 1];
   return {
     type: 'file',
     accept: accept,
@@ -321,7 +322,7 @@ var useFileUpload = function useFileUpload(storage, _ref2) {
     upload: onUpload,
     uploadComplete: onUploadComplete,
     downloadURL: downloadURL,
-    isCompleted: uploadStatus[file[file.length - 1].name] === 'success'
+    isCompleted: uploadStatus && uploadStatus[lastFile.name] === 'success'
   };
 };
 var FirebaseFileUploader = function FirebaseFileUploader(_ref3) {

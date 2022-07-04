@@ -180,6 +180,9 @@ export const useFileUpload = (storage, { accept, multiple, path }) => {
     }
   }
 
+  // last element in the file array
+  const lastFile = file[file.length - 1]
+
   return {
     /** Input type */
     type: 'file',
@@ -208,7 +211,7 @@ export const useFileUpload = (storage, { accept, multiple, path }) => {
     /** Array of Download URL for each uploaded file */
     downloadURL,
     /** boolean to indicate whether all files has been uploaded succesfully */
-    isCompleted: uploadStatus[file[file.length - 1].name] === 'success'
+    isCompleted: uploadStatus && uploadStatus[lastFile.name] === 'success'
   }
 }
 
