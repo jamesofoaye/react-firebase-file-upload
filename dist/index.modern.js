@@ -164,16 +164,17 @@ var useFileUpload = function useFileUpload(storage, _ref2) {
       uploadStatus = _useState4[0],
       setUploadStatus = _useState4[1];
 
-  var _useState5 = useState(null),
-      errorMessage = _useState5[0],
-      setErrorMessage = _useState5[1];
+  var _useState5 = useState([]),
+      downloadURL = _useState5[0],
+      setDownloadURL = _useState5[1];
 
-  var _useState6 = useState(false),
-      loading = _useState6[0],
-      setLoading = _useState6[1];
+  var _useState6 = useState(null),
+      errorMessage = _useState6[0],
+      setErrorMessage = _useState6[1];
 
-  var _useDownloadURL = useDownloadURL(),
-      setDownloadURL = _useDownloadURL.setDownloadURL;
+  var _useState7 = useState(false),
+      loading = _useState7[0],
+      setLoading = _useState7[1];
 
   useEffect(function () {
     if (!storage) {
@@ -230,7 +231,7 @@ var useFileUpload = function useFileUpload(storage, _ref2) {
     }
   };
 
-  var onFinishUpload = function onFinishUpload() {
+  var onUploadComplete = function onUploadComplete() {
     setFiles([]);
     setUploadProgress({});
     setUploadStatus({});
@@ -318,7 +319,9 @@ var useFileUpload = function useFileUpload(storage, _ref2) {
     progress: uploadProgress,
     status: uploadStatus,
     upload: onUpload,
-    finishUpload: onFinishUpload
+    uploadComplete: onUploadComplete,
+    downloadURL: downloadURL,
+    isCompleted: uploadStatus[file[file.length - 1].name] === 'success'
   };
 };
 var FirebaseFileUploader = function FirebaseFileUploader(_ref3) {
@@ -327,28 +330,28 @@ var FirebaseFileUploader = function FirebaseFileUploader(_ref3) {
       multiple = _ref3.multiple,
       path = _ref3.path;
 
-  var _useState7 = useState([]),
-      file = _useState7[0],
-      setFiles = _useState7[1];
-
-  var _useState8 = useState({}),
-      uploadProgress = _useState8[0],
-      setUploadProgress = _useState8[1];
+  var _useState8 = useState([]),
+      file = _useState8[0],
+      setFiles = _useState8[1];
 
   var _useState9 = useState({}),
-      uploadStatus = _useState9[0],
-      setUploadStatus = _useState9[1];
+      uploadProgress = _useState9[0],
+      setUploadProgress = _useState9[1];
 
-  var _useState10 = useState(null),
-      errorMessage = _useState10[0],
-      setErrorMessage = _useState10[1];
+  var _useState10 = useState({}),
+      uploadStatus = _useState10[0],
+      setUploadStatus = _useState10[1];
 
-  var _useState11 = useState(false),
-      loading = _useState11[0],
-      setLoading = _useState11[1];
+  var _useState11 = useState(null),
+      errorMessage = _useState11[0],
+      setErrorMessage = _useState11[1];
 
-  var _useDownloadURL2 = useDownloadURL(),
-      setDownloadURL = _useDownloadURL2.setDownloadURL;
+  var _useState12 = useState(false),
+      loading = _useState12[0],
+      setLoading = _useState12[1];
+
+  var _useDownloadURL = useDownloadURL(),
+      setDownloadURL = _useDownloadURL.setDownloadURL;
 
   useEffect(function () {
     if (!storage) {

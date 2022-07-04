@@ -27,10 +27,9 @@ export const useFileUpload = (storage, { accept, multiple, path }) => {
   const [file, setFiles] = useState([])
   const [uploadProgress, setUploadProgress] = useState({})
   const [uploadStatus, setUploadStatus] = useState({})
+  const [downloadURL, setDownloadURL] = useState([])
   const [errorMessage, setErrorMessage] = useState(null)
   const [loading, setLoading] = useState(false)
-
-  const { setDownloadURL } = useDownloadURL()
 
   useEffect(() => {
     if (!storage) {
@@ -91,7 +90,7 @@ export const useFileUpload = (storage, { accept, multiple, path }) => {
   }
 
   // reset states when finished uploading
-  const onFinishUpload = () => {
+  const onUploadComplete = () => {
     setFiles([])
     setUploadProgress({})
     setUploadStatus({})
@@ -182,18 +181,34 @@ export const useFileUpload = (storage, { accept, multiple, path }) => {
   }
 
   return {
+    /** Input type */
     type: 'file',
+    /** Array of accepted files to select */
     accept,
+    /** boolean to enable multiple file select */
     multiple,
+    /** boolean to disabled input */
     disabled: !storage || !path || !accept,
+    /** onChange event handler */
     onChange: onSelectFile,
+    /** Array of files selected */
     files: file,
+    /** boolean to indicate upload has started or not */
     loading,
+    /** Error Message */
     error: errorMessage,
+    /** Object of files and their upload progress */
     progress: uploadProgress,
+    /** Object of files and their upload status */
     status: uploadStatus,
+    /** Start Upload */
     upload: onUpload,
-    finishUpload: onFinishUpload
+    /** Reset all states when all upload is completed */
+    uploadComplete: onUploadComplete,
+    /** Array of Download URL for each uploaded file */
+    downloadURL,
+    /** boolean to indicate whether all files has been uploaded succesfully */
+    isCompleted: uploadStatus[file[file.length - 1].name] === 'success'
   }
 }
 
