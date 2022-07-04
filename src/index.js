@@ -183,6 +183,9 @@ export const useFileUpload = (storage, { accept, multiple, path }) => {
   // last element in the file array
   const lastFile = file[file.length - 1]
 
+  /** Remove a file from preview */
+  const onRemove = (_file) => setFiles(file.filter((e) => e !== _file))
+
   return {
     /** Input type */
     type: 'file',
@@ -206,12 +209,14 @@ export const useFileUpload = (storage, { accept, multiple, path }) => {
     status: uploadStatus,
     /** Start Upload */
     upload: onUpload,
+    /** Remove a file from preview */
+    remove: onRemove,
     /** Reset all states when all upload is completed */
     uploadComplete: onUploadComplete,
     /** Array of Download URL for each uploaded file */
     downloadURL,
     /** boolean to indicate whether all files has been uploaded succesfully */
-    isCompleted: uploadStatus && uploadStatus[lastFile.name] === 'success'
+    isCompleted: uploadStatus[lastFile?.name] === 'success'
   }
 }
 

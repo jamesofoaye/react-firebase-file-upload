@@ -308,6 +308,13 @@ var useFileUpload = function useFileUpload(storage, _ref2) {
   };
 
   var lastFile = file[file.length - 1];
+
+  var onRemove = function onRemove(_file) {
+    return setFiles(file.filter(function (e) {
+      return e !== _file;
+    }));
+  };
+
   return {
     type: 'file',
     accept: accept,
@@ -320,9 +327,10 @@ var useFileUpload = function useFileUpload(storage, _ref2) {
     progress: uploadProgress,
     status: uploadStatus,
     upload: onUpload,
+    remove: onRemove,
     uploadComplete: onUploadComplete,
     downloadURL: downloadURL,
-    isCompleted: uploadStatus && uploadStatus[lastFile.name] === 'success'
+    isCompleted: uploadStatus[lastFile === null || lastFile === void 0 ? void 0 : lastFile.name] === 'success'
   };
 };
 var FirebaseFileUploader = function FirebaseFileUploader(_ref3) {
