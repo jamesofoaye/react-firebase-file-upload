@@ -1,6 +1,6 @@
 {
   "name": "react-firebase-file-upload",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "description": " Firebase File Uploader",
   "author": "jamesofoaye",
   "license": "MIT",
@@ -46,19 +46,16 @@
     "gh-pages": "^2.2.0",
     "microbundle-crl": "^0.13.10",
     "npm-run-all": "^4.1.5",
-    "postcss": "^8.4.13",
     "prettier": "^2.0.4",
     "react": "^18.2.0",
-    "react-dom": "^17.0.2",
-    "react-scripts": "^5.0.1",
-    "tailwindcss": "^3.0.24"
+    "react-dom": "^18.2.0",
+    "react-scripts": "^5.0.1"
   },
   "files": [
     "dist"
   ],
   "dependencies": {
-    "firebase": "^9.8.4",
-    "prop-types": "^15.8.1"
+    "firebase": "^9.13.0"
   },
   "bugs": {
     "url": "https://github.com/jamesofoaye/react-firebase-file-upload/issues"

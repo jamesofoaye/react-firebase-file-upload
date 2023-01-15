@@ -1,7 +1,7 @@
-import { FirebaseFileUploader } from '.'
+import { useFileUpload } from '.'
 
-describe('FirebaseFileUploader', () => {
+describe('useFileUpload', () => {
   it('is truthy', () => {
-    expect(FirebaseFileUploader).toBeTruthy()
+    expect(useFileUpload).toBeTruthy()
   })
 })

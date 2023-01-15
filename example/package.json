@@ -1,5 +1,5 @@
 {
-  "name": "react-firebase-fileuploader-example",
+  "name": "react-firebase-file-upload-example",
   "homepage": ".",
   "version": "0.0.0",
   "private": true,
@@ -12,7 +12,7 @@
   "dependencies": {
     "react": "file:../node_modules/react",
     "react-dom": "file:../node_modules/react-dom",
-    "react-firebase-fileuploader": "file:..",
+    "react-firebase-file-upload": "file:..",
     "react-scripts": "file:../node_modules/react-scripts"
   },
   "devDependencies": {

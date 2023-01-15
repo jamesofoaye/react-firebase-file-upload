@@ -1,25 +1,6 @@
-import React, { useState, createContext, useContext, useEffect } from 'react'
+/* eslint-disable camelcase */
+import { useState, useEffect } from 'react'
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
-
-//Download URL context
-const DownloadURLContext = createContext()
-
-//Download URL Context Provider
-export const DownloadURLProvider = ({ children }) => {
-  const [downloadURL, setDownloadURL] = useState([])
-
-  return (
-    <DownloadURLContext.Provider value={{ downloadURL, setDownloadURL }}>
-      {children}
-    </DownloadURLContext.Provider>
-  )
-}
-
-// Hook to get the context
-export const useDownloadURL = () => {
-  const { downloadURL, setDownloadURL } = useContext(DownloadURLContext)
-  return { downloadURL, setDownloadURL }
-}
 
 // File Upload Hook
 export const useFileUpload = (storage, { accept, multiple, path }) => {
@@ -63,7 +44,7 @@ export const useFileUpload = (storage, { accept, multiple, path }) => {
     const selectedFiles = event.target.files
     const selectedFilesArray = Array.from(selectedFiles)
 
-    //prevent selecting unsupported files
+    // prevent selecting unsupported files
     if (accept?.length > 0) {
       const unsupportedFiles = selectedFilesArray.filter(
         (file) => !accept.includes(file.type)
@@ -79,7 +60,7 @@ export const useFileUpload = (storage, { accept, multiple, path }) => {
         return setFiles((previousFile) => previousFile.concat(remainingFiles))
       }
 
-      //prevent selecting multiple files if multiple is false
+      // prevent selecting multiple files if multiple is false
       if (!multiple) {
         return setFiles(selectedFilesArray.slice(0, 1))
       }
@@ -102,7 +83,7 @@ export const useFileUpload = (storage, { accept, multiple, path }) => {
       const storageRef = ref(storage, `${path}/${file[i].name}`)
 
       if (uploadStatus[file[i].name] === undefined) {
-        //enable loading
+        // enable loading
         setLoading(true)
 
         const uploadTask = uploadBytesResumable(storageRef, file[i])
@@ -113,7 +94,7 @@ export const useFileUpload = (storage, { accept, multiple, path }) => {
             const progress =
               (snapshot.bytesTransferred / snapshot.totalBytes) * 100
 
-            //upload progress for each file
+            // upload progress for each file
             setUploadProgress((prevProgress) => ({
               ...prevProgress,
               [file[i].name]: progress
@@ -159,16 +140,16 @@ export const useFileUpload = (storage, { accept, multiple, path }) => {
           () => {
             // Upload completed successfully, now we can get the download URL
             getDownloadURL(uploadTask.snapshot.ref).then((download_url) => {
-              //download url for each file
+              // download url for each file
               setDownloadURL((prevURL) => [...prevURL, download_url])
 
-              //stop loading
+              // stop loading
               setLoading(false)
             })
           }
         )
 
-        //upload status
+        // upload status
         const state = (await uploadTask).state
 
         setUploadStatus((prevStatus) => ({
