@@ -88,11 +88,6 @@ const App = () => {
         onChange={onChange}
       />
 
-      {/* {downloadURL &&
-        downloadURL.map((url, index) => (
-          <img key={index} src={url} alt='uploaded' />
-        ))} */}
-
       {files &&
         files.map((file, index) => (
           <div key={index}>
