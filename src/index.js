@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
 import { useState, useEffect } from 'react'
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
+import PropTypes from 'prop-types';
 
 // File Upload Hook
 export const useFileUpload = (storage, { accept, multiple, path }) => {
@@ -198,4 +199,15 @@ export const useFileUpload = (storage, { accept, multiple, path }) => {
     /** boolean to indicate whether all files has been uploaded succesfully */
     isCompleted: uploadStatus[lastFile?.name] === 'success'
   }
+}
+
+useFileUpload.propTypes = {
+  /** Firebase Storage instance */
+  storage: PropTypes.object.isRequired,
+  /** Array of accepted files to select */
+  accept: PropTypes.arrayOf(PropTypes.string).isRequired,
+  /** boolean to enable multiple file select */
+  multiple: PropTypes.bool,
+  /** Path to upload files to */
+  path: PropTypes.string.isRequired,
 }
