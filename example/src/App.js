@@ -19,7 +19,7 @@ const storage = getStorage(firebaseApp)
 const App = () => {
   const _input = useFileUpload(storage, {
     // the type of files to upload
-    accept: ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'],
+    accept: 'image/png, image/jpeg, image/jpg, image/webp',
     // whether to accept multiple files or just one
     multiple: true,
     // where you want to save the uploaded files in firebase storage
@@ -28,45 +28,31 @@ const App = () => {
 
   // props for file input
   const {
-    /** Input type */
-    type,
-    /** Array of accepted files to select */
-    accept,
-    /** boolean to enable multiple file select */
-    multiple,
-    /** boolean to disabled input */
-    disabled,
-    /** onChange event handler */
-    onChange,
-    /** Array of files selected */
+    /** Selected files */
     files,
-    /** whether upload has started and its loading or not */
+    /** Loading state */
     loading,
-    /** Error Message */
+    /** Error message */
     error,
-    /** Object of files and their upload progress */
+    /** Upload progress for each file */
     progress,
-    /** function to start upload */
-    upload,
-    /** function to remove a file from preview */
-    remove,
-    /** function to reset all states when all upload is completed */
-    uploadComplete,
-    /** whether all files has been uploaded succesfully */
+    /** Upload status for each file */
+    status,
+    /** Download URL for each file */
+    downloadURL,
+    /** Upload complete state */
     isCompleted,
-    /** Array of Download URL for each uploaded file */
-    downloadURL
+    /** Upload files to firebase storage */
+    onUpload,
+    /** Reset states when finished uploading */
+    onUploadComplete,
+    /** Remove file from selected files */
+    onRemove
   } = _input
 
   return (
     <>
-      <input
-        type={type}
-        accept={accept}
-        multiple={multiple}
-        disabled={disabled}
-        onChange={onChange}
-      />
+      <input {..._input} />
 
       {files &&
         files.map((file, index) => (
@@ -85,7 +71,7 @@ const App = () => {
             <p>{file.name}</p>
             <p>{file.size}</p>
             <p>{file.type}</p>
-            <button onClick={() => remove(file)}>Remove</button>
+            <button onClick={() => onRemove(file)}>Remove</button>
           </div>
         ))}
       {loading && <p>Loading...</p>}
@@ -96,8 +82,10 @@ const App = () => {
             {key}: {progress[key]}%
           </p>
         ))}
-      {isCompleted && <button onClick={uploadComplete}>Upload Complete</button>}
-      <button onClick={upload}>Upload</button>
+      {isCompleted && (
+        <button onClick={onUploadComplete}>Upload Complete</button>
+      )}
+      <button onClick={onUpload}>Upload</button>
 
       {downloadURL &&
         downloadURL.map((url, index) => (
