@@ -3,7 +3,8 @@ import {
   ref,
   uploadBytesResumable,
   getDownloadURL,
-  FirebaseStorage
+  FirebaseStorage,
+  TaskState
 } from 'firebase/storage'
 
 /** File upload options type */
@@ -35,9 +36,15 @@ interface FileUploadHook {
   /** Error message */
   error: string | null
   /** Upload progress for each file */
-  progress: Record<string, number>
-  /** Upload status for each file */
-  status: Record<string, string>
+  progress: {
+    [fileName: string]: number
+  }
+  /**
+   * Upload status for each file
+   *
+   * `running` | `paused`| `success` | `canceled` | `error`
+   */
+  status: { [fileName: string]: TaskState }
   /** Download URL for each file */
   downloadURL: string[]
   /** Upload complete state */
@@ -56,24 +63,31 @@ export const useFileUpload = (
   { accept, multiple, path }: FileUploadOptions
 ): FileUploadHook => {
   const [file, setFiles] = useState<File[]>([])
-  const [uploadProgress, setUploadProgress] = useState<Record<string, number>>(
+  const [uploadProgress, setUploadProgress] = useState<{
+    [fileName: string]: number
+  }>(
     {}
   )
-  const [uploadStatus, setUploadStatus] = useState<Record<string, string>>({})
+  const [uploadStatus, setUploadStatus] = useState<{
+    [fileName: string]: TaskState
+  }>({})
   const [downloadURL, setDownloadURL] = useState<string[]>([])
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [loading, setLoading] = useState<boolean>(false)
 
   useEffect(() => {
     if (!storage) {
-      return setErrorMessage('No firebase storage instance provided')
+      setErrorMessage('No firebase storage instance provided')
+      return
     }
 
     if (!accept) {
-      return setErrorMessage(
+      setErrorMessage(
         'No accepted file types provided, provide an array of file types you want to accept (e.g. "image/png, image/jpeg)'
       )
+      return
     }
+    return
   }, [storage, accept])
 
   // disappear error message after 5 seconds if error message contains unsupported file type
@@ -191,7 +205,6 @@ export const useFileUpload = (
             getDownloadURL(uploadTask.snapshot.ref).then((download_url) => {
               // download url for each file
               setDownloadURL((prevURL) => [...prevURL, download_url])
-
               // stop loading
               setLoading(false)
             })
