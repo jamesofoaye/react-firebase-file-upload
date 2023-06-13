@@ -8,7 +8,6 @@ import { useFileUpload } from 'react-firebase-file-upload'
 const firebaseConfig = {
   apiKey: '<your-api-key>',
   authDomain: '<your-auth-domain>',
-  databaseURL: '<your-database-url>',
   storageBucket: '<your-storage-bucket-url>'
 }
 const firebaseApp = initializeApp(firebaseConfig)
@@ -28,6 +27,16 @@ const App = () => {
 
   // props for file input
   const {
+    /** Input type */
+    type,
+    /** Accepted file types (e.g. "image/png, image/jpeg") */
+    accept,
+    /** Allow multiple files to be selected */
+    multiple,
+    /** Disable input */
+    disabled,
+    /** onChange event to set selected files */
+    onChange,
     /** Selected files */
     files,
     /** Loading state */
@@ -52,7 +61,14 @@ const App = () => {
 
   return (
     <>
-      <input {..._input} />
+      <input
+        type={type}
+        accept={accept}
+        multiple={multiple}
+        disabled={disabled}
+        onChange={onChange}
+        data-testid='input'
+      />
 
       {files &&
         files.map((file, index) => (
@@ -75,22 +91,26 @@ const App = () => {
           </div>
         ))}
       {loading && <p>Loading...</p>}
-      {error && <p>{error}</p>}
-      {progress &&
-        Object.keys(progress).map((key, index) => (
-          <p key={index}>
-            {key}: {progress[key]}%
-          </p>
-        ))}
+
+      {error && <p>Error: {error}</p>}
+
+      {status && Object.keys(status).map((key, index) => (
+        <p key={index}>{key}: {status[key]}</p>
+      ))}
+
+      {progress && Object.keys(progress).map((key, index) => (
+        <p key={index}> {key}: {progress[key]}% </p>
+      ))}
+
       {isCompleted && (
         <button onClick={onUploadComplete}>Upload Complete</button>
       )}
+
       <button onClick={onUpload}>Upload</button>
 
-      {downloadURL &&
-        downloadURL.map((url, index) => (
-          <img key={index} src={url} alt='uploaded' />
-        ))}
+      {downloadURL && downloadURL.map((url, index) => (
+        <img key={index} src={url} alt='uploaded' />
+      ))}
     </>
   )
 }
