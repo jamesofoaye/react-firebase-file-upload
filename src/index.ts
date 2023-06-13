@@ -74,8 +74,6 @@ export const useFileUpload = (
         'No accepted file types provided, provide an array of file types you want to accept (e.g. "image/png, image/jpeg)'
       )
     }
-
-    return setErrorMessage(null)
   }, [storage, accept])
 
   // disappear error message after 5 seconds if error message contains unsupported file type
