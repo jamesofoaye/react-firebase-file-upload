@@ -1,49 +1,98 @@
-/* eslint-disable camelcase */
-import { useState, useEffect } from 'react'
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
-import PropTypes from 'prop-types';
+import { useState, useEffect, ChangeEvent } from 'react'
+import {
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+  FirebaseStorage
+} from 'firebase/storage'
 
-// File Upload Hook
-export const useFileUpload = (storage, { accept, multiple, path }) => {
-  const [file, setFiles] = useState([])
-  const [uploadProgress, setUploadProgress] = useState({})
-  const [uploadStatus, setUploadStatus] = useState({})
-  const [downloadURL, setDownloadURL] = useState([])
-  const [errorMessage, setErrorMessage] = useState(null)
-  const [loading, setLoading] = useState(false)
+/** File upload options type */
+interface FileUploadOptions {
+  /** Accepted file types (e.g. "image/png, image/jpeg") */
+  accept: string
+  /** Allow multiple files to be selected */
+  multiple?: boolean
+  /** Path to upload files to */
+  path?: string
+}
+
+/** Hook return type */
+interface FileUploadHook {
+  /** Input type */
+  type: string
+  /** Accepted file types (e.g. "image/png, image/jpeg") */
+  accept: string
+  /** Allow multiple files to be selected */
+  multiple: boolean
+  /** Disable input */
+  disabled: boolean
+  /** onChange event to set selected files */
+  onChange: (event: ChangeEvent<HTMLInputElement>) => void
+  /** Selected files */
+  files: File[]
+  /** Loading state */
+  loading: boolean
+  /** Error message */
+  error: string | null
+  /** Upload progress for each file */
+  progress: Record<string, number>
+  /** Upload status for each file */
+  status: Record<string, string>
+  /** Download URL for each file */
+  downloadURL: string[]
+  /** Upload complete state */
+  isCompleted: boolean
+  /** Upload files to firebase storage */
+  onUpload: () => Promise<void>
+  /** Reset states when finished uploading */
+  onUploadComplete: () => void
+  /** Remove file from selected files */
+  onRemove: (file: File) => void
+}
+
+/** Firebase File Upload Hook */
+export const useFileUpload = (
+  storage: FirebaseStorage,
+  { accept, multiple, path }: FileUploadOptions
+): FileUploadHook => {
+  const [file, setFiles] = useState<File[]>([])
+  const [uploadProgress, setUploadProgress] = useState<Record<string, number>>(
+    {}
+  )
+  const [uploadStatus, setUploadStatus] = useState<Record<string, string>>({})
+  const [downloadURL, setDownloadURL] = useState<string[]>([])
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [loading, setLoading] = useState<boolean>(false)
 
   useEffect(() => {
     if (!storage) {
       return setErrorMessage('No firebase storage instance provided')
     }
 
-    if (!path) {
-      return setErrorMessage('No path provided')
-    }
-
     if (!accept) {
       return setErrorMessage(
-        'No accepted file types provided, provide an array of file types you want to accept'
+        'No accepted file types provided, provide an array of file types you want to accept (e.g. "image/png, image/jpeg)'
       )
     }
 
     return setErrorMessage(null)
-  }, [storage, path, accept])
+  }, [storage, accept])
 
-  // disappear error message after 3 seconds if error message contains unsupported file type
+  // disappear error message after 5 seconds if error message contains unsupported file type
   useEffect(() => {
     if (errorMessage?.includes('Unsupported file type')) {
       const timer = setTimeout(() => {
         setErrorMessage(null)
-      }, 3000)
+      }, 5000)
       return () => clearTimeout(timer)
     }
+    return
   }, [errorMessage])
 
   /** onChange event to set selected files */
-  const onSelectFile = (event) => {
+  const onSelectFile = (event: ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = event.target.files
-    const selectedFilesArray = Array.from(selectedFiles)
+    const selectedFilesArray = Array.from(selectedFiles || [])
 
     // prevent selecting unsupported files
     if (accept?.length > 0) {
@@ -81,7 +130,9 @@ export const useFileUpload = (storage, { accept, multiple, path }) => {
   // upload files to firebase storage
   const onUpload = async () => {
     for (let i = 0; i < file.length; i++) {
-      const storageRef = ref(storage, `${path}/${file[i].name}`)
+      // path for each file in the file array (if path is provided) else just the file name as path
+      const _path = path ? `${path}/${file[i].name}` : file[i].name
+      const storageRef = ref(storage, _path)
 
       if (uploadStatus[file[i].name] === undefined) {
         // enable loading
@@ -89,9 +140,8 @@ export const useFileUpload = (storage, { accept, multiple, path }) => {
 
         const uploadTask = uploadBytesResumable(storageRef, file[i])
 
-        uploadTask.on(
-          'state_changed',
-          (snapshot) => {
+        uploadTask.on('state_changed', {
+          next: (snapshot) => {
             const progress =
               (snapshot.bytesTransferred / snapshot.totalBytes) * 100
 
@@ -110,7 +160,7 @@ export const useFileUpload = (storage, { accept, multiple, path }) => {
                 break
             }
           },
-          (error) => {
+          error: (error) => {
             // A full list of error codes is available at
             // https://firebase.google.com/docs/storage/web/handle-errors
             switch (error.code) {
@@ -138,7 +188,7 @@ export const useFileUpload = (storage, { accept, multiple, path }) => {
                 break
             }
           },
-          () => {
+          complete: () => {
             // Upload completed successfully, now we can get the download URL
             getDownloadURL(uploadTask.snapshot.ref).then((download_url) => {
               // download url for each file
@@ -148,7 +198,7 @@ export const useFileUpload = (storage, { accept, multiple, path }) => {
               setLoading(false)
             })
           }
-        )
+        })
 
         // upload status
         const state = (await uploadTask).state
@@ -165,49 +215,23 @@ export const useFileUpload = (storage, { accept, multiple, path }) => {
   const lastFile = file[file.length - 1]
 
   /** Remove a file from preview */
-  const onRemove = (_file) => setFiles(file.filter((e) => e !== _file))
+  const onRemove = (_file: File) => setFiles(file.filter((e) => e !== _file))
 
   return {
-    /** Input type */
     type: 'file',
-    /** Array of accepted files to select */
-    accept,
-    /** boolean to enable multiple file select */
-    multiple,
-    /** boolean to disabled input */
-    disabled: !storage || !path || !accept,
-    /** onChange event handler */
+    accept: accept || 'image/png, image/jpeg',
+    multiple: multiple || false,
+    disabled: !storage,
     onChange: onSelectFile,
-    /** Array of files selected */
     files: file,
-    /** boolean to indicate upload has started or not */
-    loading,
-    /** Error Message */
+    loading: loading,
     error: errorMessage,
-    /** Object of files and their upload progress */
     progress: uploadProgress,
-    /** Object of files and their upload status */
     status: uploadStatus,
-    /** Start Upload */
-    upload: onUpload,
-    /** Remove a file from preview */
-    remove: onRemove,
-    /** Reset all states when all upload is completed */
-    uploadComplete: onUploadComplete,
-    /** Array of Download URL for each uploaded file */
-    downloadURL,
-    /** boolean to indicate whether all files has been uploaded succesfully */
+    onUpload: onUpload,
+    onRemove: onRemove,
+    onUploadComplete: onUploadComplete,
+    downloadURL: downloadURL,
     isCompleted: uploadStatus[lastFile?.name] === 'success'
   }
-}
-
-useFileUpload.propTypes = {
-  /** Firebase Storage instance */
-  storage: PropTypes.object.isRequired,
-  /** Array of accepted files to select */
-  accept: PropTypes.arrayOf(PropTypes.string).isRequired,
-  /** boolean to enable multiple file select */
-  multiple: PropTypes.bool,
-  /** Path to upload files to */
-  path: PropTypes.string.isRequired,
 }
