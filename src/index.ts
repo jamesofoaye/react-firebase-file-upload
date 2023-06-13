@@ -65,9 +65,7 @@ export const useFileUpload = (
   const [file, setFiles] = useState<File[]>([])
   const [uploadProgress, setUploadProgress] = useState<{
     [fileName: string]: number
-  }>(
-    {}
-  )
+  }>({})
   const [uploadStatus, setUploadStatus] = useState<{
     [fileName: string]: TaskState
   }>({})
