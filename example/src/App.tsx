@@ -94,13 +94,20 @@ const App = () => {
 
       {error && <p>Error: {error}</p>}
 
-      {status && Object.keys(status).map((key, index) => (
-        <p key={index}>{key}: {status[key]}</p>
-      ))}
+      {status &&
+        Object.keys(status).map((key, index) => (
+          <p key={index}>
+            {key}: {status[key]}
+          </p>
+        ))}
 
-      {progress && Object.keys(progress).map((key, index) => (
-        <p key={index}> {key}: {progress[key]}% </p>
-      ))}
+      {progress &&
+        Object.keys(progress).map((key, index) => (
+          <p key={index}>
+            {' '}
+            {key}: {progress[key]}%{' '}
+          </p>
+        ))}
 
       {isCompleted && (
         <button onClick={onUploadComplete}>Upload Complete</button>
@@ -108,9 +115,10 @@ const App = () => {
 
       <button onClick={onUpload}>Upload</button>
 
-      {downloadURL && downloadURL.map((url, index) => (
-        <img key={index} src={url} alt='uploaded' />
-      ))}
+      {downloadURL &&
+        downloadURL.map((url, index) => (
+          <img key={index} src={url} alt='uploaded' />
+        ))}
     </>
   )
 }
